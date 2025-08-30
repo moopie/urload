@@ -2,10 +2,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-public sealed class UrloadWorker(
+namespace UrloadApp;
+
+public class UrloadWorker(
     ILogger<UrloadWorker> log,
-    IHttpClientFactory httpClientFactory,
-    IOptions<UrloadOptions> options) : BackgroundService
+    IHttpClientFactory httpClient,
+    IOptions<UrloadOptions> options,
+    IHostApplicationLifetime lifetime) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
@@ -15,12 +18,12 @@ public sealed class UrloadWorker(
         if (urls.Length == 0)
         {
             log.LogWarning("No URLs configured.");
-            return;
+            throw new Exception("No URLs configured.");
         }
 
         log.LogInformation("Starting downloads: {Count} urls, parallelism={Par}", urls.Length, opts.MaxConcurrency);
 
-        var client = httpClientFactory.CreateClient("downloader");
+        var client = httpClient.CreateClient("downloader");
 
         await Parallel.ForEachAsync(urls, new ParallelOptions
             {
@@ -33,7 +36,10 @@ public sealed class UrloadWorker(
                 {
                     var fileName = GetSafeFileName(url);
                     var path = Path.Combine(opts.OutputDir, fileName);
+                    
+                    log.LogInformation($"Starting download: {url}");
 
+                    // Downloading the file.
                     using var resp = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
                     resp.EnsureSuccessStatusCode();
 
@@ -43,7 +49,7 @@ public sealed class UrloadWorker(
 
                     log.LogInformation("✔ Downloaded {Url} -> {Path}", url, path);
                 }
-                catch (OperationCanceledException) { /* shutdown */ }
+                catch (OperationCanceledException) {}
                 catch (Exception ex)
                 {
                     log.LogError(ex, "✖ Failed to download {Url}", url);
@@ -51,6 +57,7 @@ public sealed class UrloadWorker(
             });
 
         log.LogInformation("All done.");
+        lifetime.StopApplication();
     }
 
     private static string GetSafeFileName(string url)

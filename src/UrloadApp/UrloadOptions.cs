@@ -1,4 +1,6 @@
-public sealed class UrloadOptions
+namespace UrloadApp;
+
+public class UrloadOptions
 {
     public string OutputDir { get; set; } = "downloads";
     public int MaxConcurrency { get; set; } = 4;
