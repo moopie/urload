@@ -8,7 +8,8 @@ public class UrloadWorker(
     ILogger<UrloadWorker> log,
     IHttpClientFactory httpClient,
     IOptions<UrloadOptions> options,
-    IHostApplicationLifetime lifetime) : BackgroundService
+    IHostApplicationLifetime lifetime,
+    IUrloadDownloader downloader) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
@@ -30,29 +31,29 @@ public class UrloadWorker(
                 MaxDegreeOfParallelism = Math.Max(1, opts.MaxConcurrency),
                 CancellationToken = ct
             },
-            async (url, token) =>
+            async (url, cancellationToken) =>
             {
-                try
+                for (var retry = 0; retry <= opts.MaxRetries; retry++)
                 {
-                    var fileName = GetSafeFileName(url);
-                    var path = Path.Combine(opts.OutputDir, fileName);
-                    
-                    log.LogInformation($"Starting download: {url}");
+                    try
+                    {
+                        var path = await downloader.DownloadAsync(url, cancellationToken);
 
-                    // Downloading the file.
-                    using var resp = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
-                    resp.EnsureSuccessStatusCode();
-
-                    await using var input = await resp.Content.ReadAsStreamAsync(token);
-                    await using var output = File.Create(path);
-                    await input.CopyToAsync(output, token);
-
-                    log.LogInformation("✔ Downloaded {Url} -> {Path}", url, path);
-                }
-                catch (OperationCanceledException) {}
-                catch (Exception ex)
-                {
-                    log.LogError(ex, "✖ Failed to download {Url}", url);
+                        log.LogInformation("✔ Downloaded {Url} -> {Path}", url, path);
+                        retry = opts.MaxRetries + 1;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (retry == opts.MaxRetries)
+                        {
+                            throw;
+                        }
+                        log.LogError(ex, "✖ Failed to download {Url}, attempt #{retry}", url, retry);
+                    }
                 }
             });
 

@@ -13,6 +13,9 @@ await Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
         services.Configure<UrloadOptions>(context.Configuration.GetSection("Download"));
+        
+        services.AddTransient<IUrloadDownloader, UrloadDownloader>();
+        
         services.AddHttpClient("urload-app", c =>
         {
             c.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("UrlDownloader", "1.0"));
