@@ -23,7 +23,7 @@ public class UrloadDownloader(IHttpClientFactory httpClient, IOptions<UrloadOpti
                     
         log.LogInformation($"Starting download: {url}");
                     
-        var buffer = new byte[opts.MaxBufferSizeInKb]; // default buffer size used by CopyToAsync
+        var buffer = new byte[opts.MaxBufferSizeInKb * 1024];
         long totalRead = 0;
         int read;
                     
