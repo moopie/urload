@@ -62,7 +62,7 @@ public class UrloadDownloaderTests
         });
 
         var downloader = CreateDownloader(handler);
-        var url = "http://example.com/test.txt";
+        var url = "https://gist.githubusercontent.com/MattIPv4/045239bc27b16b2bcf7a3a9a4648c08a/raw/2411e31293a35f3e565f61e7490a806d4720ea7e/bee%2520movie%2520script";
 
         // Act
         var path = await downloader.DownloadAsync(url, CancellationToken.None);
@@ -86,7 +86,7 @@ public class UrloadDownloaderTests
         });
 
         var downloader = CreateDownloader(handler);
-        var url = "http://example.com/big.bin";
+        var url = "http://debian.xfree.com.ar/debian-cd/current-live/amd64/iso-hybrid/debian-live-13.0.0-amd64-gnome.iso";
 
         // Act + Assert
         Assert.ThrowsAsync<IOException>(async () =>
@@ -101,7 +101,7 @@ public class UrloadDownloaderTests
         var handler = new SlowHandler(delayPerReadMs: 50, totalBytes: 1024);
 
         var downloader = CreateDownloader(handler);
-        var url = "http://example.com/slow.bin";
+        var url = "http://debian.xfree.com.ar/debian-cd/current-live/amd64/iso-hybrid/debian-live-13.0.0-amd64-gnome.iso";
 
         // Act + Assert
         Assert.ThrowsAsync<IOException>(async () =>
