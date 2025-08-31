@@ -42,17 +42,13 @@ public class UrloadWorker(
 
                         retry = opts.MaxRetries + 1;
                     }
-                    catch (OperationCanceledException)
-                    {
-                        throw;
-                    }
                     catch (Exception ex)
                     {
+                        log.LogError(ex, "✖ Failed to download {Url}, attempt #{retry}", url, retry);
                         if (retry == opts.MaxRetries)
                         {
-                            throw;
+                            return;
                         }
-                        log.LogError(ex, "✖ Failed to download {Url}, attempt #{retry}", url, retry);
                     }
                 }
             });
