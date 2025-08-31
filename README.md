@@ -1,3 +1,3 @@
-# Urload 1.0
+# Urload
 
 A command line service to download a list of urls.

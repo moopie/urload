@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -26,6 +27,7 @@ public class UrloadDownloader(IHttpClientFactory httpClient, IOptions<UrloadOpti
         var buffer = new byte[opts.MaxBufferSizeInKb * 1024];
         long totalRead = 0;
         int read;
+        var sw = Stopwatch.StartNew();
                     
         var client = httpClient.CreateClient("downloader");
         using var resp = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
@@ -37,12 +39,23 @@ public class UrloadDownloader(IHttpClientFactory httpClient, IOptions<UrloadOpti
             totalRead += read;
             if (totalRead > opts.MaxFileSizeInKb * 1024)
             {
-                log.LogWarning("✖ File {Url} exceeded size limit ({Max} bytes). Aborting.", url, opts.MaxFileSizeInKb);
+                log.LogWarning("[x] File {Url} exceeded size limit ({Max} bytes). Aborting.", url, opts.MaxFileSizeInKb);
+                sw.Stop();
                 throw new IOException($"File too large: exceeded {opts.MaxFileSizeInKb} bytes");
+            }
+
+            if (sw.ElapsedMilliseconds > opts.MaxTimeInMs)
+            {
+                log.LogWarning("File {Url} exceeded time limit of {ElapsedMs}", url, sw.ElapsedMilliseconds);
+                sw.Stop();
+                throw new IOException($"File took too long to download: exceeded {opts.MaxTimeInMs} milliseconds");
             }
 
             await output.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
         }
+        
+        log.LogInformation("[v] Downloaded {Url} -> {Path} in {time} ({size}b downloaded)", url, path, sw.ElapsedMilliseconds, totalRead);
+        sw.Stop();
 
         return path;
     }

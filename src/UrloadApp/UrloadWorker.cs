@@ -38,9 +38,8 @@ public class UrloadWorker(
                 {
                     try
                     {
-                        var path = await downloader.DownloadAsync(url, cancellationToken);
+                        await downloader.DownloadAsync(url, cancellationToken);
 
-                        log.LogInformation("✔ Downloaded {Url} -> {Path}", url, path);
                         retry = opts.MaxRetries + 1;
                     }
                     catch (OperationCanceledException)

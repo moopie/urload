@@ -7,5 +7,6 @@ public record UrloadOptions
     public int MaxFileSizeInKb { get; set; } = 1024 * 1024;
     public int MaxRetries { get; set; } = 3;
     public int MaxBufferSizeInKb { get; set; } = 1024 * 1024;
+    public int MaxTimeInMs { get; set; } = 5000;
     public List<string> Urls { get; set; } = new();
 }
