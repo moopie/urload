@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{43D035E2-C4B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrloadApp", "src\UrloadApp\UrloadApp.csproj", "{480EB600-2A2C-4972-990F-5D47F3DF1FA2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{844F722F-383E-4F0D-B505-6C5C9B4AD36F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrloadTests", "tests\UrloadTests\UrloadTests.csproj", "{71E57CDF-70DE-48CF-B1A9-6D310D9C3325}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,11 +21,16 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{480EB600-2A2C-4972-990F-5D47F3DF1FA2} = {43D035E2-C4B1-4C27-846E-6008C0DFAB30}
+		{71E57CDF-70DE-48CF-B1A9-6D310D9C3325} = {844F722F-383E-4F0D-B505-6C5C9B4AD36F}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{480EB600-2A2C-4972-990F-5D47F3DF1FA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{480EB600-2A2C-4972-990F-5D47F3DF1FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{480EB600-2A2C-4972-990F-5D47F3DF1FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{480EB600-2A2C-4972-990F-5D47F3DF1FA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71E57CDF-70DE-48CF-B1A9-6D310D9C3325}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71E57CDF-70DE-48CF-B1A9-6D310D9C3325}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71E57CDF-70DE-48CF-B1A9-6D310D9C3325}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71E57CDF-70DE-48CF-B1A9-6D310D9C3325}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
